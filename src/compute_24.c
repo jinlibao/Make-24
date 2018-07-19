@@ -8,7 +8,7 @@
  * Copyright (c) 2018 Libao Jin
  * All rights reserved
  * License: MIT License
- * Version: v1.0
+ * Version: v2.0
  */
 
 #include <stdio.h>
@@ -23,62 +23,54 @@ int factorial(int n);
 
 int main(int argc, char* argv[])
 {
-    int nums[4] = {0, 0, 0, 1}, numsSize = 4, operationsSize = 4, resSize, interface = 3;
-    char operations[] = "+-*/", *resOperations;
+    int nums[4] = {0, 0, 0, 1}, numsSize = 4, interface = 2;
 
     if (argc > 1)
-            interface = atoi(argv[1]);
-    // Interface 3: read from the keyboard
-    if (interface == 3)
+        interface = atoi(argv[1]);
+    if (interface == 2)
         printf("Welcome to Compute 24! Please enter four numbers such as 1 2 3 4.\nExit: 0 0 0 0.\n");
 
-    while (interface > 0 && nums[0] + nums[1] + nums[2] + nums[3] > 0)
+    while (interface > 0 && nums[0] + nums[1] + nums[2] + nums[3])
     {
-        if (interface == 2)
-        {
-            // Interface 2: read from command line
+        // Interface 1: read from command line
+        if (1 == interface)
             for (int i = 2; i < argc; i++)
                 nums[i-2] = atoi(argv[i]);
-            interface = 0;
-        }
+        // Interface 2: read from the buffer provided by keyboard
+        // Interface 3: read from the buffer provided by files
         else
             scanf("%d %d %d %d", &nums[0], &nums[1], &nums[2], &nums[3]);
 
-        int i = 0, pnumsSize, **pnums = permute(nums, numsSize, &pnumsSize);
-        for (i = 0; i < pnumsSize; i++)
-        {
+        char operations[] = "+-*/", *resOperations;
+        int i, resSize, pnumsSize, operationsSize = 4, **pnums = permute(nums, numsSize, &pnumsSize);
+        for (i = 0, resSize = 0; resSize == 0 && i < pnumsSize; i++)
             resOperations = brutalForceCompute(pnums[i], numsSize, operations, operationsSize, &resSize);
-            if (resSize == 3)
-                break;
-        }
 
-        if (interface == 1)
+        // Print out the result
+        if (interface == 3)
             printf("%2d %2d %2d %2d: ", nums[0], nums[1], nums[2], nums[3]);
         else
             printf("%d %d %d %d: ", nums[0], nums[1], nums[2], nums[3]);
-
-        if (i < pnumsSize)
-        {
-            if (resSize == 3)
-                printf("((%d %c %d) %c %d) %c %d\n", pnums[i][0], resOperations[0], pnums[i][1], resOperations[1], pnums[i][2], resOperations[2], pnums[i][3]);
-        }
+        if (i-- < pnumsSize && resSize == 3)
+            printf("((%d %c %d) %c %d) %c %d\n", pnums[i][0], resOperations[0], pnums[i][1], resOperations[1], pnums[i][2], resOperations[2], pnums[i][3]);
         else
             printf("Impossible to make up 24.\n");
+
         free(pnums);
         free(resOperations);
+        if (interface == 1)
+            interface--;
     }
 
-    if (interface > 1)
+    if (interface > 0 && interface < 3)
         printf("Program exited.\n");
     return 0;
 }
 
 char* brutalForceCompute(int *nums, int numsSize, char operations[], int operationsSize, int *returnSize)
 {
-    int res = nums[0];
-    char *foundOperations;
     *returnSize = 0;
-    foundOperations = malloc((*returnSize + 1)* sizeof(char));
+    char *foundOperations = malloc((*returnSize + 1)* sizeof(char));
     foundOperations[*returnSize] = '\0';
 
     if (numsSize != 4)
@@ -92,7 +84,7 @@ char* brutalForceCompute(int *nums, int numsSize, char operations[], int operati
             double tmp2 = binaryOperation(tmp1, nums[2], operations[j]);
             for (int k = 0; k < operationsSize; k++)
             {
-                if (binaryOperation(tmp2, nums[3], operations[k]) - 24 == 0)
+                if (fabs(binaryOperation(tmp2, nums[3], operations[k]) - 24.0) < 1e-10)
                 {
                     *returnSize = 3;
                     foundOperations = realloc(foundOperations, (*returnSize + 1)* sizeof(char));
@@ -100,6 +92,7 @@ char* brutalForceCompute(int *nums, int numsSize, char operations[], int operati
                     foundOperations[0] = operations[i];
                     foundOperations[1] = operations[j];
                     foundOperations[2] = operations[k];
+                    return foundOperations;
                 }
             }
         }
