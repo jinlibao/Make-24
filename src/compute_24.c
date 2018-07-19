@@ -18,51 +18,58 @@
 
 double binaryOperation(double num1, double num2, char operation);
 char* brutalForceCompute(int *nums, int numsSize, char operations[], int operationsSize, int *returnSize);
+int** permute(int* nums, int numsSize, int* returnSize);
+int factorial(int n);
 
 int main(int argc, char* argv[])
 {
-    int nums[4] = {0, 0, 0, 1}, numsSize = 4, operationsSize = 4, resSize, interface = 1;
+    int nums[4] = {0, 0, 0, 1}, numsSize = 4, operationsSize = 4, resSize, interface = 3;
     char operations[] = "+-*/", *resOperations;
 
     if (argc > 1)
-        if (atoi(argv[1]) == 2)
-            interface = 2;
+            interface = atoi(argv[1]);
+    // Interface 3: read from the keyboard
+    if (interface == 3)
+        printf("Welcome to Compute 24! Please enter four numbers such as 1 2 3 4.\nExit: 0 0 0 0.\n");
 
-    if (interface == 1)
+    while (interface > 0 && nums[0] + nums[1] + nums[2] + nums[3] > 0)
     {
-        if (argc <= 1)
-            printf("Welcome to Compute 24! Please enter four numbers such as 1 2 3 4.\nExit: 0 0 0 0.\n");
-        while (nums[0] + nums[1] + nums[2] + nums[3])
+        if (interface == 2)
         {
-            scanf("%d %d %d %d", &nums[0], &nums[1], &nums[2], &nums[3]);
-            resOperations = brutalForceCompute(nums, numsSize, operations, operationsSize, &resSize);
-
-            if (argc > 1)
-                printf("%2d %2d %2d %2d: ", nums[0], nums[1], nums[2], nums[3]);
-            else
-                printf("%d %d %d %d: ", nums[0], nums[1], nums[2], nums[3]);
-
-            if (resSize == 3)
-                printf("((%d %c %d) %c %d) %c %d\n", nums[0], resOperations[0], nums[1], resOperations[1], nums[2], resOperations[2], nums[3]);
-            else
-                printf("Impossible to make up 24.\n");
-            free(resOperations);
+            // Interface 2: read from command line
+            for (int i = 2; i < argc; i++)
+                nums[i-2] = atoi(argv[i]);
+            interface = 0;
         }
-    }
-    else
-    {
-        // Interface 2: read from command line
-        for (int i = 2; i < argc; i++)
-            nums[i-2] = atoi(argv[i]);
-            resOperations = brutalForceCompute(nums, numsSize, operations, operationsSize, &resSize);
-            printf("%d %d %d %d: ", nums[0], nums[1], nums[2], nums[3]);
+        else
+            scanf("%d %d %d %d", &nums[0], &nums[1], &nums[2], &nums[3]);
+
+        int i = 0, pnumsSize, **pnums = permute(nums, numsSize, &pnumsSize);
+        for (i = 0; i < pnumsSize; i++)
+        {
+            resOperations = brutalForceCompute(pnums[i], numsSize, operations, operationsSize, &resSize);
             if (resSize == 3)
-                printf("((%d %c %d) %c %d) %c %d\n", nums[0], resOperations[0], nums[1], resOperations[1], nums[2], resOperations[2], nums[3]);
-            else
-                printf("Impossible to make up 24.\n");
+                break;
+        }
+
+        if (interface == 1)
+            printf("%2d %2d %2d %2d: ", nums[0], nums[1], nums[2], nums[3]);
+        else
+            printf("%d %d %d %d: ", nums[0], nums[1], nums[2], nums[3]);
+
+        if (i < pnumsSize)
+        {
+            if (resSize == 3)
+                printf("((%d %c %d) %c %d) %c %d\n", pnums[i][0], resOperations[0], pnums[i][1], resOperations[1], pnums[i][2], resOperations[2], pnums[i][3]);
+        }
+        else
+            printf("Impossible to make up 24.\n");
+        free(pnums);
+        free(resOperations);
     }
 
-    printf("Program exited.\n");
+    if (interface > 1)
+        printf("Program exited.\n");
     return 0;
 }
 
@@ -120,4 +127,44 @@ double binaryOperation(double num1, double num2, char operation)
         default:
             return -1;
     }
+}
+
+int** permute(int* nums, int numsSize, int* returnSize)
+{
+    int **pnums;
+    *returnSize = factorial(numsSize);
+    pnums = malloc(*returnSize * sizeof(int*));
+    if (numsSize == 0 || numsSize == 1)
+    {
+        pnums[0] = malloc(numsSize * sizeof(int));
+        if (numsSize == 1)
+            pnums[0][0] = nums[0];
+        return pnums;
+    }
+    for (int i = 0; i < numsSize; i++)
+    {
+        int **snums, subSize, *tnums = malloc((numsSize - 1) * sizeof(int));
+        for (int j = 0, m = 0; j < numsSize; j++)
+            if (j != i)
+                tnums[m++] = nums[j];
+        snums = permute(tnums, numsSize - 1, &subSize);
+        free(tnums);
+        for (int j = 0; j < subSize; j++)
+        {
+            pnums[i * subSize + j] = malloc(numsSize * sizeof(int));
+            pnums[i * subSize + j][0] = nums[i];
+            for (int k = 0; k < numsSize - 1; k++)
+                pnums[i * subSize + j][k + 1] = snums[j][k];
+            free(snums[j]);
+        }
+        free(snums);
+    }
+    return pnums;
+}
+
+int factorial(int n)
+{
+    if (n == 0)
+        return 1;
+    return factorial(n - 1) * n;
 }
