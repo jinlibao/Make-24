@@ -5,7 +5,7 @@ Using brutal force to compute 24 in C.
 ## Basic information
 
 * Maintainer: Libao Jin & Lingxiao Jia
-* Email: [jinlibao@outlook.com](mailto:jinlibao@outlook.com?subject=GitHub: Compute-24)
+* Email: [jinlibao@outlook.com](mailto:jinlibao@outlook.com?subject=[GitHub]%20Compute-24)
 * Create date: 06/28/2017
 * Update date: 07/19/2018
 * Current version: v1.0
