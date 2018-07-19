@@ -1,10 +1,10 @@
 CC = gcc
-CFLAG = --std=c99 -wall
+CFLAG = --std=c99 -Wall
 
 ALLPROGS = compute_24
 
 compute_24: compute_24.o
-	$(CC) -o $@ $<
+	$(CC) $(CFLAG) -o $@ $<
 
 clean:
 	rm -rf $(ALLPROGS:=.o) $(ALLPROGS:=.dSYM)
