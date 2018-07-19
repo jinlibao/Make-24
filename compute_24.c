@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define N 4
+#define N 3
 
-int** permutation(int, int*);
+int** permute(int* nums, int numsSize, int* returnSize);
 int factorial(int);
 void zeros(int, int*);
 
@@ -12,20 +12,20 @@ int main()
     /*int* numbers;*/
     int n, fn;
     n = N;
-    fn = factorial(N);
-    for (int i = 0; i < n; i++)
+    int i, j;
+    for (i = 0; i < n; i++)
     {
         numbers[i] = i + 1;
-        printf("%d ", numbers[i]);
+        /*printf("%d ", numbers[i]);*/
     }
     printf("\n");
 
     int** array_2d;
-    array_2d = permutation(n, numbers);
+    array_2d = permute(numbers, n, &fn);
     /*printf("%d %d\n%d %d\n", array_2d[0][0], array_2d[0][1], array_2d[1][0], array_2d[1][1]);*/
-    for (int i = 0; i < fn; i++)
+    for (i = 0; i < fn; i++)
     {
-        for (int j = 0; j < n; j++)
+        for (j = 0; j < n; j++)
             printf("%-5d", array_2d[i][j]);
             /*printf("array_2d[%d][%d] = %d\n", i, j, array_2d[i][j]);*/
         printf("\n");
@@ -34,69 +34,44 @@ int main()
     return 0;
 }
 
-int** permutation(int n, int* array)
+int** permute(int* nums, int numsSize, int* returnSize)
 {
-    if (n == 1)
+    int **pnums;
+    *returnSize = factorial(numsSize);
+    pnums = malloc(*returnSize * sizeof(int*));
+    if (numsSize == 0 || numsSize == 1)
     {
-        int array_2d[n][n];
-        int** ptr_array_2d;
-        int* ptr_array[n];
-        for (int i = 0; i < n; i++)
-        {
-            ptr_array[i] = array_2d[i];
-        }
-        array_2d[0][0] = array[0];
-        ptr_array_2d = ptr_array;
-        return ptr_array_2d;
+        pnums[0] = malloc(numsSize * sizeof(int));
+        if (numsSize == 1)
+            pnums[0][0] = nums[0];
+        return pnums;
     }
-    else
+    for (int i = 0; i < numsSize; i++)
     {
-        int fn = factorial(n), fm = factorial(n-1);
-        int** ptr_array_2d;
-        int* ptr_array[fn];
-        int array_2d[fn][n];
-
-        for (int i = 0; i < fn; i++)
+        int **snums, subSize, *tnums = malloc((numsSize - 1) * sizeof(int));
+        for (int j = 0, m = 0; j < numsSize; j++)
+            if (j != i)
+                tnums[m++] = nums[j];
+        snums = permute(tnums, numsSize - 1, &subSize);
+        free(tnums);
+        for (int j = 0; j < subSize; j++)
         {
-            ptr_array[i] = array_2d[i];
+            pnums[i * subSize + j] = malloc(numsSize * sizeof(int));
+            pnums[i * subSize + j][0] = nums[i];
+            for (int k = 0; k < numsSize - 1; k++)
+                pnums[i * subSize + j][k + 1] = snums[j][k];
+            free(snums[j]);
         }
-        ptr_array_2d = ptr_array;
-
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < fm; j++)
-                array_2d[i * fm + j][0] = array[i];
-
-            int indicator[n];
-            zeros(n, indicator);
-            indicator[i] = 1;
-            int new_array[n-1], k = 0;
-            for (int j = 0; j < n; j++)
-            {
-                if (indicator[j] == 0)
-                {
-                    new_array[k] = array[j];
-                    k++;
-                }
-            }
-
-            int** subarray_2d = permutation(n-1, new_array);
-            for (int j = 0; j < fm; j++)
-            {
-                for (int k = 0; k < n-1; k++)
-                    array_2d[i * fm + j][k+1] = subarray_2d[j][k];
-            }
-        }
-        return ptr_array_2d;
+        free(snums);
     }
+    return pnums;
 }
 
 int factorial(int n)
 {
-    if (n == 1)
-        return n;
-    else
-        return n * factorial(n-1);
+    if (n == 0)
+        return 1;
+    return factorial(n - 1) * n;
 }
 
 void zeros(int n, int* array)
