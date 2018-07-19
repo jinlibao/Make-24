@@ -1,16 +1,27 @@
+/**
+ * compute_24.c
+ * Using brutal force to make up 24 given four numbers.
+ *
+ * Author: Libao Jin
+ * Email: jinlibao@outlook.com
+ * Date: 07/19/2018
+ * Copyright (c) 2018 Libao Jin
+ * All rights reserved
+ * License: MIT License
+ * Version: v1.0
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <limits.h>
-
-#define N 4
 
 double binaryOperation(double num1, double num2, char operation);
 char* brutalForceCompute(int *nums, int numsSize, char operations[], int operationsSize, int *returnSize);
 
 int main(int argc, char* argv[])
 {
-    int nums[N] = {0, 0, 0, 1}, numsSize = N, operationsSize = 4, resSize, interface = 1;
+    int nums[4] = {0, 0, 0, 1}, numsSize = 4, operationsSize = 4, resSize, interface = 1;
     char operations[] = "+-*/", *resOperations;
 
     if (argc > 1)
@@ -19,11 +30,18 @@ int main(int argc, char* argv[])
 
     if (interface == 1)
     {
+        if (argc <= 1)
+            printf("Welcome to Compute 24! Please enter four numbers such as 1 2 3 4.\nExit: 0 0 0 0.\n");
         while (nums[0] + nums[1] + nums[2] + nums[3])
         {
             scanf("%d %d %d %d", &nums[0], &nums[1], &nums[2], &nums[3]);
             resOperations = brutalForceCompute(nums, numsSize, operations, operationsSize, &resSize);
-            printf("%2d %2d %2d %2d: ", nums[0], nums[1], nums[2], nums[3]);
+
+            if (argc > 1)
+                printf("%2d %2d %2d %2d: ", nums[0], nums[1], nums[2], nums[3]);
+            else
+                printf("%d %d %d %d: ", nums[0], nums[1], nums[2], nums[3]);
+
             if (resSize == 3)
                 printf("((%d %c %d) %c %d) %c %d\n", nums[0], resOperations[0], nums[1], resOperations[1], nums[2], resOperations[2], nums[3]);
             else
@@ -34,8 +52,8 @@ int main(int argc, char* argv[])
     else
     {
         // Interface 2: read from command line
-        for (int i = 1; i < argc; i++)
-            nums[i-1] = atoi(argv[i]);
+        for (int i = 2; i < argc; i++)
+            nums[i-2] = atoi(argv[i]);
             resOperations = brutalForceCompute(nums, numsSize, operations, operationsSize, &resSize);
             printf("%d %d %d %d: ", nums[0], nums[1], nums[2], nums[3]);
             if (resSize == 3)
@@ -44,6 +62,7 @@ int main(int argc, char* argv[])
                 printf("Impossible to make up 24.\n");
     }
 
+    printf("Program exited.\n");
     return 0;
 }
 

@@ -11,4 +11,4 @@ clean:
 	rm -rf $(ALLPROGS:=.o) $(ALLPROGS:=.dSYM)
 
 distclean:
-	rm -rf $(ALLPROGS) $(ALLPROGS:=.o) $(ALLPROGS:=.dSYM)
+	rm -rf $(ALLPROGS) $(EXECFOLDER)/$(ALLPROGS) $(ALLPROGS:=.o) $(ALLPROGS:=.dSYM)
