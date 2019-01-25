@@ -1,10 +1,10 @@
 CC = gcc
-CFLAG = --std=c99 -Wall
+CFLAG = --std=c11 -Wall -O3
 EXECFOLDER = ../exec
 
-ALLPROGS = compute_24
+ALLPROGS = make_24
 
-compute_24: compute_24.o
+make_24: make_24.o
 	$(CC) $(CFLAG) -o $(EXECFOLDER)/$@ $<
 
 clean:

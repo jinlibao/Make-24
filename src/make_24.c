@@ -16,8 +16,11 @@
 #include <math.h>
 #include <limits.h>
 
+typedef char bool;
+#define true 1
+#define false 0
 double binaryOperation(double num1, double num2, char operation);
-char* brutalForceCompute(int *nums, int numsSize, char operations[], int operationsSize, int *returnSize);
+char* brutalForceCompute(int *nums, int numsSize, char operations[], int operationsSize, int *returnSize, bool *isForward);
 int** permute(int* nums, int numsSize, int* returnSize);
 int factorial(int n);
 
@@ -43,16 +46,21 @@ int main(int argc, char* argv[])
 
         char operations[] = "+-*/", *resOperations;
         int i, resSize, pnumsSize, operationsSize = 4, **pnums = permute(nums, numsSize, &pnumsSize);
+        bool isForward;
         for (i = 0, resSize = 0; resSize == 0 && i < pnumsSize; i++)
-            resOperations = brutalForceCompute(pnums[i], numsSize, operations, operationsSize, &resSize);
+            resOperations = brutalForceCompute(pnums[i], numsSize, operations, operationsSize, &resSize, &isForward);
 
         // Print out the result
         if (interface == 3)
             printf("%2d %2d %2d %2d: ", nums[0], nums[1], nums[2], nums[3]);
         else
             printf("%d %d %d %d: ", nums[0], nums[1], nums[2], nums[3]);
-        if (i-- < pnumsSize && resSize == 3)
-            printf("((%d %c %d) %c %d) %c %d\n", pnums[i][0], resOperations[0], pnums[i][1], resOperations[1], pnums[i][2], resOperations[2], pnums[i][3]);
+        if (i-- < pnumsSize && resSize == 3) {
+            if (isForward)
+                printf("((%d %c %d) %c %d) %c %d\n", pnums[i][0], resOperations[0], pnums[i][1], resOperations[1], pnums[i][2], resOperations[2], pnums[i][3]);
+            else
+                printf("%d %c (%d %c (%d %c %d))\n", pnums[i][0], resOperations[0], pnums[i][1], resOperations[1], pnums[i][2], resOperations[2], pnums[i][3]);
+        }
         else
             printf("Impossible to make up 24.\n");
 
@@ -67,7 +75,7 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-char* brutalForceCompute(int *nums, int numsSize, char operations[], int operationsSize, int *returnSize)
+char* brutalForceCompute(int *nums, int numsSize, char operations[], int operationsSize, int *returnSize, bool *isForward)
 {
     *returnSize = 0;
     char *foundOperations = malloc((*returnSize + 1)* sizeof(char));
@@ -92,12 +100,35 @@ char* brutalForceCompute(int *nums, int numsSize, char operations[], int operati
                     foundOperations[0] = operations[i];
                     foundOperations[1] = operations[j];
                     foundOperations[2] = operations[k];
+                    *isForward = true;
                     return foundOperations;
                 }
             }
         }
     }
 
+    for (int i = 0; i < operationsSize; i++)
+    {
+        double tmp1 = binaryOperation(nums[2], nums[3], operations[i]);
+        for (int j = 0; j < operationsSize; j++)
+        {
+            double tmp2 = binaryOperation(nums[1], tmp1, operations[j]);
+            for (int k = 0; k < operationsSize; k++)
+            {
+                if (fabs(binaryOperation(nums[0], tmp2, operations[k]) - 24.0) < 1e-10)
+                {
+                    *returnSize = 3;
+                    foundOperations = realloc(foundOperations, (*returnSize + 1)* sizeof(char));
+                    foundOperations[*returnSize] = '\0';
+                    foundOperations[0] = operations[i];
+                    foundOperations[1] = operations[j];
+                    foundOperations[2] = operations[k];
+                    *isForward = false;
+                    return foundOperations;
+                }
+            }
+        }
+    }
     return foundOperations;
 }
 
