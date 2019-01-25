@@ -7,8 +7,8 @@ Using brutal force to make 24 in C.
 * Maintainer: Libao Jin & Lingxiao Jia
 * Email: [jinlibao@outlook.com](mailto:jinlibao@outlook.com?subject=[GitHub]%20Make-24)
 * Create date: 06/28/2017
-* Update date: 07/19/2018
-* Current version: [v2.0](https://github.com/jinlibao/Make-24/tree/v2.0)
+* Update date: 01/25/2019
+* Current version: [v3.0](https://github.com/jinlibao/Make-24/tree/v3.0)
 
 ## Demo
 
