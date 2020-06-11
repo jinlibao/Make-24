@@ -8,7 +8,7 @@
 
 using namespace std;
 
-const double EPS = 1e-6;
+const double EPS = 1e-9;
 int interface = 2;
 
 double op(double a, double b, int o) {
@@ -26,10 +26,12 @@ double op(double a, double b, int o) {
   }
 }
 
-bool solve(vector<int>& nums) {
+void solve(vector<int>& nums) {
   sort(nums.begin(), nums.end());
   unordered_set<string> seen;
-  int n = 4;
+  string ops = "+-*/";
+  int n = ops.size();
+  bool solvable = false;
   do {
     int a = nums[0], b = nums[1], c = nums[2], d = nums[3];
     string key = to_string(a) + "," + to_string(a) + "," + to_string(c) + "," + to_string(d) + ",";
@@ -49,27 +51,53 @@ bool solve(vector<int>& nums) {
           results.push_back(op(a, op(op(b, c, j), d, k), i));
           // a - (b - (c - d))
           results.push_back(op(a, op(b, op(c, d, k), j), i));
-          for (auto& r : results)
-            if (fabs(r - 24) < EPS) return true;
+          bool solvablePerm = false;
+          for (int l = 0; l < (int)results.size() && !solvablePerm; ++l) {
+            if (abs(results[l] - 24) < EPS) {
+              printf("\n\t");
+              switch (l) {
+                case 0:
+                  printf("((%2d %c %2d) %c %2d) %c %2d", a, ops[i], b, ops[j], c, ops[k], d);
+                  break;
+                case 1:
+                  printf("(%2d %c %2d) %c (%2d %c %2d)", a, ops[i], b, ops[j], c, ops[k], d);
+                  break;
+                case 2:
+                  printf("(%2d %c (%2d %c %2d)) %c %2d", a, ops[i], b, ops[j], c, ops[k], d);
+                  break;
+                case 3:
+                  printf("%2d %c ((%2d %c %2d) %c %2d)", a, ops[i], b, ops[j], c, ops[k], d);
+                  break;
+                case 4:
+                  printf("%2d %c (%2d %c (%2d %c %2d))", a, ops[i], b, ops[j], c, ops[k], d);
+                  break;
+              }
+              solvable = true;
+              solvablePerm = true;
+            }
+          }
         }
       }
     }
   } while (next_permutation(nums.begin(), nums.end()));
-  return false;
+  if (!solvable)
+    printf("Impossible to make 24.\n");
+  else
+    printf("\n");
 }
 
 void show_result(vector<int>& nums) {
   bool isFirst = true;
   for (auto& n : nums) {
     if (isFirst) {
-      cout << n;
+      printf("%2d", n);
       isFirst = false;
     } else {
-      cout << " " << n;
+      printf(" %2d", n);
     }
   }
-  bool isValid = solve(nums);
-  cout << ": " << isValid << endl;
+  printf(": ");
+  solve(nums);
 }
 
 int main(int argc, char* argv[]) {
@@ -77,7 +105,7 @@ int main(int argc, char* argv[]) {
   if (argc > 1) {
     interface = atoi(argv[1]);
   } else {
-    interface = 0;
+    interface = 2;
   }
   switch (interface) {
     case 1:
@@ -85,6 +113,7 @@ int main(int argc, char* argv[]) {
       show_result(nums);
       break;
     case 2:
+    case 3:
       int n, i = 0;
       while (cin >> n) {
         nums[i++ % 4] = n;
