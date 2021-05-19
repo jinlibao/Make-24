@@ -17,9 +17,9 @@ make_24_c: make_24.c
 	$(cc) $(CFLAG) -o $@ $<
 
 run: game24 game24_2 make_24
-	\time ./game24 < ../data/game24.in > ../data/game24.res
-	\time ./game24_2 < ../data/game24.in > ../data/game24_2.res
-	\time ./make_24 < ../data/game24.in > ../data/game24_3.res
+	\time ./game24 < ../data/game24.in > ../data/game24.txt
+	\time ./game24_2 < ../data/game24.in > ../data/game24_2.txt
+	\time ./make_24 < ../data/game24.in > ../data/game24_3.txt
 
 clean:
 	rm -rf $(ALLPROGS:=.o) $(ALLPROGS:=.dSYM)
