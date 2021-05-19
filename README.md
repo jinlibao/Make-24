@@ -7,48 +7,35 @@ Using brutal force to make 24 in C.
 * Maintainer: Libao Jin & Lingxiao Jia
 * Email: [jinlibao@outlook.com](mailto:jinlibao@outlook.com?subject=[GitHub]%20Make-24)
 * Create date: 06/28/2017
-* Update date: 01/25/2019
-* Current version: [v3.0](https://github.com/jinlibao/Make-24/tree/v3.0)
+* Update date: 05/19/2021
+* Current version: [v3.1](https://github.com/jinlibao/Make-24/tree/v3.1)
 
 ## Demo
 
-We've provided makefile to make the compiling process much easier.
+We've provided a Makefile to make the compiling process much easier. Go to `src`, then run
 
-1. Go to `src`, then run
+```bash
+cd src
+make run
+```
 
-    ```bash
-    cd src
-    make
-    ```
+or
 
-    or
+```bash
+cd src && mkdir build && cd build
+cmake ..
+make
+./game24   < ../../data/game24.in > ../../data/game24.res
+./game24_2 < ../../data/game24.in > ../../data/game24_2.res
 
-    ```bash
-    cd src
-    make make_24
-    ```
+# interface 1: read numbers from command line
+./make_24 1 number_1 number_2 number_3 number_4
 
-2. After running `make`, the executable binary file would be located under `exec`.
-3. Run the executable file as follows:
+# interface 2: read numbers from keyboard (default)
+./make_24
+./make_24 2
+# enter "0 0 0 0" to exit
 
-    ```bash
-    # interface 1: read numbers from command line
-    ../exec/make_24 1 number_1 number_2 number_3 number_4
-
-    # interface 2: read numbers from keyboard (default)
-    ../exec/make_24
-    ../exec/make_24 2
-
-    # interface 3: read data from/write data into files
-    ../exec/make_24 3 < ../data/input.txt > ../data/output.txt
-
-    ```
-4. To exit the program when using interface 1: enter four consecutive 0's.
-
-    ```
-    ../exec/make_24
-    1 2 3 4
-    1 2 3 4: ((1 * 2) * 3) * 4
-    0 0 0 0
-    0 0 0 0: Impossible to make up 24.
-    ```
+# interface 3: read data from/write data into files
+./make_24 3 < ../../data/game24.in > ../../data/game24_3.res
+```
