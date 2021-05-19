@@ -1,19 +1,28 @@
 cc = gcc
 CC = g++
-CFLAG = --std=c11 -Wall -O3
-CCFLAG = --std=c++17 -Wall -O3
-EXECFOLDER = ../exec
+CFLAG = --std=c11 -Wall -O2
+CCFLAG = --std=c++17 -Wall -O2
 
-ALLPROGS = make_24_c make_24_cc
+EXT = *.cc
+SRC = $(wildcard $(EXT))
 
-make_24_cc: make_24.cc
-	$(CC) $(CCFLAG) -o $(EXECFOLDER)/$@ $<
+ALLPROGS = make_24_c $(basename $(SRC))
+
+all: $(ALLPROGS)
+
+%: %.cc
+	$(CC) $(CCFLAG) -o $@ $<
 
 make_24_c: make_24.c
-	$(cc) $(CFLAG) -o $(EXECFOLDER)/$@ $<
+	$(cc) $(CFLAG) -o $@ $<
+
+run: game24 game24_2 make_24
+	\time ./game24 < ../data/game24.in > ../data/game24.res
+	\time ./game24_2 < ../data/game24.in > ../data/game24_2.res
+	\time ./make_24 < ../data/game24.in > ../data/game24_3.res
 
 clean:
 	rm -rf $(ALLPROGS:=.o) $(ALLPROGS:=.dSYM)
 
 distclean:
-	rm -rf $(ALLPROGS) $(EXECFOLDER)/$(ALLPROGS) $(ALLPROGS:=.o) $(ALLPROGS:=.dSYM)
+	rm -rf $(ALLPROGS) $(ALLPROGS:=.o) $(ALLPROGS:=.dSYM)
